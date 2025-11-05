@@ -35,3 +35,5 @@ bubble_sort(exemplo)
 #     novo.append(random.radint(10, 100000))
 
 # bubble_sort(novo)
+
+#se ja estiver ordenado bubblesort é melhor

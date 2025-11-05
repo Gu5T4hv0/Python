@@ -15,7 +15,7 @@ def palindromo(palavra:str) -> bool:
 
 def contagem(numero:int):
     if numero > 0:
-        print(numero)
+        print(f"{numero} ", end="")
         return contagem(numero - 1)
     else:
         return 0
@@ -33,3 +33,20 @@ def calcular_descontos(lista:list, discount):
         return 0
     else:
         return lista[0]*(discount - 0.1) + calcular_descontos(lista[1:], discount - 0.1)
+    
+def explicar_fatorial(number):
+    if number > 1:
+        print(f"{number} * ", end="")
+        return number * explicar_fatorial(number - 1)
+    else:
+        print(f"1", end="")
+        return 1
+    
+def explorando_diretorios(lista):
+    total = 0
+    for i in lista:
+        if type(i) == str:
+            total += 1
+        elif type(i) == list:
+            total += explorando_diretorios(i)
+    return total
