@@ -122,7 +122,7 @@ export default function CreateQuestionForm() {
         mediaType: mediaFile ? mediaType : 'none',
       };
 
-      // Enviar para Supabase: upload (opcional) + insert na tabela questions
+      // Upload opcional da mídia; DB será criado via webhook após pagamento
       let media_url: string | null = null;
 
         const { data: userData } = await supabase.auth.getUser();
@@ -166,33 +166,32 @@ export default function CreateQuestionForm() {
             .getPublicUrl(uploadData.path);
           media_url = publicUrlData.publicUrl;
         }
+        // Criar sessão de Checkout na API e redirecionar
+        const resp = await fetch('/api/checkout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            user_id: userId,
+            title: questionData.title,
+            description: questionData.description,
+            tags: questionData.tags,
+            price: questionData.price,
+            media_url,
+            media_type: questionData.mediaType === 'none' ? null : questionData.mediaType,
+            media_duration_seconds: mediaDuration ? Math.floor(mediaDuration) : null,
+          }),
+        });
 
-        const insertPayload = {
-          user_id: userId,
-          title: questionData.title,
-          description: questionData.description,
-          tags: questionData.tags,
-          price: questionData.price,
-          media_url,
-          media_type: questionData.mediaType === 'none' ? null : questionData.mediaType,
-          media_duration_seconds: mediaDuration ? Math.floor(mediaDuration) : null,
-          status: 'open',
-        };
-
-        const { data: insertData, error: insertError } = await supabase
-          .from('questions')
-          .insert([insertPayload])
-          .select();
-
-        if (insertError) {
-          console.error('Insert error', insertError);
-          setErrors({ submit: 'Erro ao salvar pergunta no banco de dados.' });
+        const data = await resp.json();
+        if (!resp.ok || !data?.url) {
+          setErrors({ submit: data?.error || 'Falha ao criar sessão de pagamento.' });
           setLoading(false);
           return;
         }
 
-        console.log('Inserted question', insertData);
-        setSuccess(true);
+        // Redireciona para o Stripe Checkout
+        window.location.href = data.url as string;
+
       setTitle('');
       setDescription('');
       setTags('');
@@ -200,8 +199,6 @@ export default function CreateQuestionForm() {
       setMediaFile(null);
       setMediaType('none');
       setMediaDuration(null);
-
-      setTimeout(() => setSuccess(false), 3000);
     } catch (error) {
       setErrors({ submit: 'Erro ao enviar pergunta. Tente novamente.' });
     } finally {
