@@ -1,0 +1,27 @@
+INFO Server started on port 8080
+DEBUG Initializing database connection
+INFO Database connected successfully
+WARN Memory usage at 75%
+ERROR Failed to load configuration file
+INFO Attempting to use default configuration
+DEBUG Loading default settings
+ERROR Missing environment variable: API_KEY
+INFO Starting background job scheduler
+WARN Job 'cleanup_temp' took longer than expected
+DEBUG Retrying failed jobs
+ERROR Could not connect to external API
+INFO External API retry scheduled
+DEBUG Connection pool created
+ERROR Timeout while waiting for response
+ERROR Invalid JSON response received
+INFO Cache cleared successfully
+DEBUG Checking system health
+WARN CPU temperature high: 85°C
+ERROR Disk read failure in /dev/sda1
+INFO Restarting disk controller
+DEBUG Controller restart successful
+ERROR Authentication failed for user admin
+ERROR Unauthorized access attempt detected
+INFO Session terminated
+DEBUG System shutting down
+INFO Shutdown complete

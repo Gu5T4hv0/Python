@@ -1,0 +1,8 @@
+{
+  "version": 2,
+  "framework": "nextjs",
+  "buildCommand": "cd apps/web && npm run build",
+  "installCommand": "cd apps/web && npm install --legacy-peer-deps --no-audit --no-fund",
+  "ignoreCommand": "git diff --quiet HEAD^ HEAD apps/web",
+  "outputDirectory": "apps/web/.next"
+}

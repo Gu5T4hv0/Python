@@ -1,0 +1,8 @@
+Ana,250
+Bruno,320
+Carlos,280
+Daniela,310
+Eduardo,290
+Fernanda,340
+Gustavo,300
+Helena,330

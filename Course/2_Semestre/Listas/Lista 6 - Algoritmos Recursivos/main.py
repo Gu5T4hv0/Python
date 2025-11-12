@@ -1,5 +1,5 @@
 from Funções \
-import somar, palindromo, contagem, soma_digitos, calcular_descontos, explicar_fatorial, explorando_diretorios
+import *
 
 caixas = [3,5,2]
 total = somar(caixas, 0)
@@ -20,3 +20,9 @@ resultado = explicar_fatorial(5)
 print(f" = {resultado}")
 
 print(explorando_diretorios(["a.txt", ["b.txt", "c.txt"]]))
+
+print(f"Pares: {fibonacci(6)}")
+
+print(f"Formas: {subindo_uma_escada(4)}")
+
+print(f"Formas: {quebra_de_moedas(4)}")

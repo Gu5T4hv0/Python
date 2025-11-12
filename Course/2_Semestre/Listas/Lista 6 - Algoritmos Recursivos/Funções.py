@@ -50,3 +50,23 @@ def explorando_diretorios(lista):
         elif type(i) == list:
             total += explorando_diretorios(i)
     return total
+
+def fibonacci(mes):
+    if mes == 1 or mes == 2:
+        return 1
+    else:
+        return fibonacci(mes - 1) + fibonacci(mes - 2)
+
+def subindo_uma_escada(steps):
+    if steps == 1:
+        return 1
+    elif steps == 2:
+        return 2
+    else:
+        return subindo_uma_escada(steps - 1) + subindo_uma_escada(steps - 2)
+    
+def quebra_de_moedas(n):
+    if n == 1 or n == 2:
+        return 1
+    else:
+        return quebra_de_moedas(n - 1) + quebra_de_moedas(n - 2)

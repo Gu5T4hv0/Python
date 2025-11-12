@@ -1,0 +1,15 @@
+Estruturas de dados são fundamentais na computação.
+Um algoritmo eficiente depende de uma boa estrutura de dados.
+A busca binária é um algoritmo rápido para listas ordenadas.
+A estrutura de dados pilha segue o princípio LIFO.
+A fila é uma estrutura de dados com princípio FIFO.
+Um algoritmo pode utilizar várias estruturas de dados ao mesmo tempo.
+O estudo de algoritmos e estruturas de dados é essencial para programadores.
+Estruturas como árvore e grafo são usadas para representar relações.
+Um grafo é uma estrutura de dados composta por vértices e arestas.
+Árvores são úteis em algoritmos de busca e ordenação.
+Estruturas, algoritmos e dados formam a base da ciência da computação.
+Aprender estruturas de dados ajuda a resolver problemas complexos.
+Um bom algoritmo economiza tempo e recursos.
+Estruturas diferentes têm usos diferentes.
+A otimização de algoritmos é um tema avançado.
