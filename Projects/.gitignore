@@ -21,3 +21,6 @@ yarn-error.log*
 __pycache__/
 *.py[cod]
 
+# Vercel (ignore deploy config at repo root)
+vercel.json
+.vercel/

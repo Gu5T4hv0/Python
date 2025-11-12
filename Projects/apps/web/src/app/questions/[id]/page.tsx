@@ -46,6 +46,12 @@ export default function QuestionDetailPage() {
   const [showAnswerForm, setShowAnswerForm] = useState(false);
   const [answerContent, setAnswerContent] = useState('');
   const [submittingAnswer, setSubmittingAnswer] = useState(false);
+  const [answerMediaType, setAnswerMediaType] = useState<'audio' | 'video' | 'none'>('none');
+  const [answerMediaFile, setAnswerMediaFile] = useState<File | null>(null);
+  const [answerMediaDuration, setAnswerMediaDuration] = useState<number | null>(null);
+  const [answerError, setAnswerError] = useState<string | null>(null);
+
+  const MAX_DURATION = 180; // 3min
 
   useEffect(() => {
     const fetchQuestion = async () => {
@@ -148,13 +154,51 @@ export default function QuestionDetailPage() {
       return;
     }
 
+    // Validate media duration if present
+    if (answerMediaFile && answerMediaDuration !== null && answerMediaDuration > MAX_DURATION) {
+      setAnswerError('Duração máxima de 3 minutos excedida.');
+      return;
+    }
+
     setSubmittingAnswer(true);
     try {
+      // Optional upload first
+      let media_url: string | null = null;
+      let media_type: 'audio' | 'video' | null = null;
+      let media_duration_seconds: number | null = null;
+
+      if (answerMediaFile) {
+        const ext = answerMediaFile.name.split('.').pop();
+        const key = `answers/${user.id}/${Date.now()}.${ext}`;
+
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('question-media')
+          .upload(key, answerMediaFile as File, {
+            cacheControl: '3600',
+            upsert: false,
+            contentType: answerMediaFile.type,
+          });
+        if (uploadError) {
+          setAnswerError(`Erro ao enviar mídia: ${uploadError.message}`);
+          setSubmittingAnswer(false);
+          return;
+        }
+        const { data: publicUrlData } = supabase.storage
+          .from('question-media')
+          .getPublicUrl(uploadData.path);
+        media_url = publicUrlData.publicUrl;
+        media_type = answerMediaType === 'none' ? null : answerMediaType;
+        media_duration_seconds = answerMediaDuration ? Math.floor(answerMediaDuration) : null;
+      }
+
       const { error } = await supabase.from('answers').insert([
         {
           question_id: questionId,
           mentor_id: user.id,
           body: answerContent,
+          media_url,
+          media_type,
+          media_duration_seconds,
         },
       ]);
 
@@ -177,6 +221,10 @@ export default function QuestionDetailPage() {
 
       setAnswerContent('');
       setShowAnswerForm(false);
+      setAnswerMediaFile(null);
+      setAnswerMediaType('none');
+      setAnswerMediaDuration(null);
+      setAnswerError(null);
 
       // Refetch para atualizar ID real
       const { data: answersRefetch } = await supabase
@@ -368,6 +416,72 @@ export default function QuestionDetailPage() {
                 <p className="text-xs text-gray-500 mt-1">
                   Dica: Seja conciso, objetivo e útil. Respostas com áudio/vídeo aparecem como links.
                 </p>
+              </div>
+
+              {/* Mídia opcional na resposta */}
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
+                <p className="text-sm font-medium text-gray-700 mb-3">Adicionar mídia (opcional)</p>
+                <div className="flex gap-4 mb-3">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input type="radio" checked={answerMediaType === 'audio'} onChange={() => setAnswerMediaType('audio')} />
+                    <span className="text-sm">🎙️ Áudio</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input type="radio" checked={answerMediaType === 'video'} onChange={() => setAnswerMediaType('video')} />
+                    <span className="text-sm">🎥 Vídeo</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input type="radio" checked={answerMediaType === 'none'} onChange={() => setAnswerMediaType('none')} />
+                    <span className="text-sm">Nenhum</span>
+                  </label>
+                </div>
+
+                {answerMediaType !== 'none' && (
+                  <div>
+                    <input
+                      type="file"
+                      accept={answerMediaType === 'audio' ? 'audio/mpeg,audio/m4a,audio/mp4' : 'video/mp4,video/quicktime'}
+                      onChange={(e) => {
+                        const file = e.target.files?.[0] || null;
+                        setAnswerError(null);
+                        setAnswerMediaFile(file);
+                        setAnswerMediaDuration(null);
+                        if (!file) return;
+                        const objUrl = URL.createObjectURL(file);
+                        const isAudio = file.type.startsWith('audio');
+                        const el = document.createElement(isAudio ? 'audio' : 'video');
+                        el.preload = 'metadata';
+                        el.src = objUrl;
+                        el.onloadedmetadata = () => {
+                          URL.revokeObjectURL(objUrl);
+                          const d = Number(el.duration || 0);
+                          setAnswerMediaDuration(Number.isFinite(d) ? d : null);
+                          if (d && d > MAX_DURATION) {
+                            setAnswerError('Duração máxima de 3 minutos excedida.');
+                            setAnswerMediaFile(null);
+                            setAnswerMediaDuration(null);
+                            e.currentTarget.value = '';
+                          }
+                        };
+                        el.onerror = () => {
+                          URL.revokeObjectURL(objUrl);
+                          setAnswerError('Não foi possível ler a duração da mídia.');
+                        };
+                      }}
+                      className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                    />
+                    {answerMediaFile && (
+                      <div className="mt-2 p-3 bg-blue-50 rounded-lg">
+                        <p className="text-sm text-gray-700">📎 {answerMediaFile.name} ({(answerMediaFile.size / 1024 / 1024).toFixed(2)}MB)</p>
+                        {answerMediaDuration !== null && (
+                          <p className="text-xs text-gray-600 mt-1">Duração: {Math.floor(answerMediaDuration / 60)}:{String(Math.floor(answerMediaDuration % 60)).padStart(2, '0')}</p>
+                        )}
+                      </div>
+                    )}
+                    <p className="text-xs text-gray-500 mt-2">Máximo 3 minutos, 50MB</p>
+                    {answerError && <p className="text-red-500 text-sm mt-2">{answerError}</p>}
+                  </div>
+                )}
               </div>
 
               <div className="flex gap-3">
