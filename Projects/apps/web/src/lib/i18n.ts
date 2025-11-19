@@ -1,10 +1,11 @@
-export type Locale = 'pt' | 'en';
+export const LOCALES = ['pt-BR', 'en'] as const;
 
-// MVP helper: resolve locale from query param only (default: pt)
-export function resolveLocale(
-  searchParams?: Record<string, string | string[] | undefined>
-): Locale {
-  const raw = (searchParams?.['lang'] as string) || '';
-  const candidate = raw.toLowerCase();
-  return candidate === 'en' ? 'en' : 'pt';
+export type Locale = (typeof LOCALES)[number];
+
+export const DEFAULT_LOCALE: Locale = 'pt-BR';
+
+export function normalizeLocale(input: string | null | undefined): Locale {
+  const value = (input || '').toLowerCase();
+  if (value.startsWith('pt')) return 'pt-BR';
+  return 'en';
 }

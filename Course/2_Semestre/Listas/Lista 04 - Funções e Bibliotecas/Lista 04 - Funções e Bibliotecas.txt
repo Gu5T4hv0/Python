@@ -1,0 +1,50 @@
+Funções e Bibliotecas (padrão da biblioteca padrão Python)
+1.Análise de Vendas com statistics
+Enunciado: Escreva funções para calcular média, mediana, moda e desvio-padrão de um vetor de vendas mensais e outra função para detectar outliers via z-score (|z|>2). Não use bibliotecas externas.
+Entrada (exemplo): vendas=[10,12,13,11,60,12,14,13]
+Saída (exemplo): media=18.13, mediana=12.5, outliers=[60].
+
+2.Conversor de Unidades em Módulo Reutilizável
+Enunciado: Crie um módulo com funções: celsius_p_fahrenheit, km_p_milhas, kg_p_lb e a inversa de cada uma. Inclua validação e testes simples (doctest).
+Entrada (exemplo): km_p_milhas(5)
+Saída (exemplo): 3.106855.
+
+3.Estatísticas de Texto com collections.Counter
+Enunciado: Funções para limpar texto (minúsculas, remover pontuação), contar palavras e retornar as 10 mais frequentes com suas contagens.
+Entrada (exemplo): "Bom dia, bom humor, bom trabalho!"
+Saída (exemplo): [('bom',3), ('dia',1), ('humor',1), ('trabalho',1)].
+
+4.Gerador de Senhas com secrets e string
+Enunciado: Função gerar_senha(tam, maiusculas=True, digitos=True, simbolos=True) que monta o alfabeto permitido e usa secrets.choice para montar senhas fortes. Garanta ao menos um de cada tipo escolhido.
+Entrada (exemplo): gerar_senha(10, True, True, False)
+Saída (exemplo): "aB9kTqLmRp".
+
+5.Agenda Simples (em Memória) com Busca Flexível
+Enunciado: Implemente funções para adicionar, remover e buscar contatos em um dicionário (nome -> telefones). A busca deve aceitar trechos do nome (case-insensitive).
+Entrada (exemplo): adicionar "Ana Paula": ["11-9999-1234"], buscar "ana"
+Saída (exemplo): retorna {"Ana Paula": ["11-9999-1234"]}.
+
+6.Conversor de Moedas com Tabela Interna
+Enunciado: Crie uma função converter(valor, de, para) usando uma tabela fixa de cotações internas (ex.: BRL, USD, EUR). Implemente validação de moedas e arredondamento para 2 casas.
+Entrada (exemplo): converter(100, 'USD', 'BRL') (considerando 1 USD = 5.00 BRL)
+Saída (exemplo): 500.00.
+
+7.Datas e Prazos com datetime
+Enunciado: Função que, dada uma data inicial (AAAA-MM-DD) e um prazo em dias úteis, retorna a data final, ignorando fins de semana.
+Entrada (exemplo): data='2025-03-10', dias_uteis=5
+Saída (exemplo): 2025-03-17.
+
+8.Gerenciador de Tarefas com Prioridade (heapq)
+Enunciado: Implemente um min-heap de tarefas contendo (prioridade, descricao). Funções: adicionar, executar_proxima, listar.
+Entrada (exemplo): adicionar (1,'pagar contas'), (3,'lavar roupa'), (2,'estudar'); executar duas
+Saída (exemplo): executadas: pagar contas, estudar.
+
+9.Combinações e Arranjos com itertools
+Enunciado: Funções que, dado um conjunto de itens, gerem todas as combinações de tamanho k e todos os arranjos de tamanho k. Conte quantos resultados existem.
+Entrada (exemplo): itens ['A','B','C','D'], k=2
+Saída (exemplo): combinações: 6, arranjos: 12.
+
+10.Validador de CPF
+Enunciado: Função que valida um CPF calculando os dígitos verificadores e rejeitando sequências repetidas (ex.: 111.111.111-11). Entradas podem vir com pontuação.
+Entrada (exemplo): "529.982.247-25"
+Saída (exemplo): valido=True.

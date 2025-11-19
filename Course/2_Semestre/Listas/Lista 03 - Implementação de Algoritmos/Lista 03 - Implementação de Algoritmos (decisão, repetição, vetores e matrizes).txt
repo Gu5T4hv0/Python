@@ -1,0 +1,56 @@
+Implementação de Algoritmos (decisão, repetição, vetores e matrizes)
+
+1.Boletim da Turma com Estatísticas
+Enunciado: Leia as notas (0 a 10) de N alunos em uma lista. Calcule média da turma, maior e menor nota, desvio-padrão (pode usar fórmula própria) e quantos alunos ficaram acima da média. Mostre também a distribuição em faixas: [0–2), [2–4), [4–6), [6–8), [8–10].
+Entrada (exemplo): N=6 e notas: 7.5 9.0 4.0 6.5 8.0 5.0
+Saída (exemplo):
+media=6.67, maior=9.0, menor=4.0, acima_media=3
+faixas: [0-2)=0, [2-4)=0, [4-6)=2, [6-8)=2, [8-10]=2
+
+2.Caixa Eletrônico com Cédulas Limitadas
+Enunciado: Dado um valor de saque e um vetor com as cédulas disponíveis e suas quantidades (ex.: {100:2, 50:3, 20:5, 10:8}), calcule uma combinação que usa a menor quantidade total de cédulas. Se for impossível, informe.
+Entrada (exemplo): saque=380, cédulas: {100:2, 50:1, 20:5, 10:10}
+Saída (exemplo): {100:2, 50:1, 20:1, 10:1}
+Obs.: se não houver solução, imprimir impossivel.
+
+3.Controle de Estoque por Operações
+Enunciado: Dado um vetor com o estoque inicial de produtos e uma sequência de operações no formato "E codigo qtd" (entrada) ou "S codigo qtd" (saída), atualize o estoque. Impeça saídas maiores que o disponível e registre erros. Ao final, imprima o estoque e o total de operações inválidas.
+Entrada (exemplo): estoque inicial {A:10, B:3}, operações: E A 5, S B 2, S A 20
+Saída (exemplo): estoque final {A:15, B:1}, inválidas: 1 (por S A 20).
+
+4.Jogo da Forca (versão sem interface)
+Enunciado: Receba uma palavra secreta e uma lista de tentativas de letras. Mostre a evolução do tabuleiro a cada tentativa e o resultado final (ganhou/perdeu) com o número de erros.
+Entrada (exemplo): palavra "PYTHON"; tentativas: P, A, O, X, T, H, N
+Saída (exemplo):
+_ _ _ _ _ _ → P _ _ _ _ _ → P _ _ _ O _ → ...
+resultado: ganhou, erros=2.
+
+5.Matriz de Ocupação (Assentos de Sala)
+Enunciado: Dada uma matriz R x C (0=livre, 1=ocupado), implemente: reservar assento, liberar assento e verificar blocos contíguos de k lugares livres na mesma fila. Imprima um mapa final.
+Entrada (exemplo): R=3,C=5, matriz inicial com alguns 1s; operações: reservar(1,2), liberar(0,4), existe_bloco(k=3)
+Saída (exemplo): mapa final e existe_bloco=True.
+
+6.Bingo – Verificação de Ganhadores
+Enunciado: Gere M cartelas (5x5) com números válidos (faixas por coluna) ou leia-as prontas. Receba a sequência de números sorteados e identifique a primeira cartela vencedora (linha/coluna/diagonal completa).
+Entrada (exemplo): 2 cartelas 5x5 e sorteio: 7, 13, 22, ...
+Saída (exemplo): vencedora=cartela_2, criterio=diagonal_principal, chamadas=18.
+
+7.Análise de Temperaturas com Maior Sequência Quente
+Enunciado: Dado um vetor de temperaturas diárias, calcule média, dias acima da média e a maior sequência consecutiva acima de um limiar L.
+Entrada (exemplo): temps: 28, 31, 33, 29, 30, 34, L=30
+Saída (exemplo): media=30.83, acima_media=3, maior_sequencia_acima_L=2.
+
+8.Sudoku Checker
+Enunciado: Receba uma matriz 9x9 e verifique se é uma solução válida de Sudoku: todos os números de 1 a 9 em cada linha, coluna e subgrade 3x3. Informe o primeiro erro encontrado (linha/coluna/subgrade).
+Entrada (exemplo): matriz 9x9 preenchida
+Saída (exemplo): valida=True ou valida=False, erro=subgrade(1,1).
+
+9.Ranking de Campeonato (Matriz de Resultados)
+Enunciado: Dada uma matriz T x T onde m[i][j] é o número de gols do time i contra o time j (e m[j][i] o inverso), compute pontos (vitória=3, empate=1), saldo e ordene o ranking por pontos, saldo e gols pró.
+Entrada (exemplo): matriz 4x4 com placares
+Saída (exemplo): 1º Time 3 (7 pts, saldo +5), etc.
+
+10.Fila de Atendimento (Simulação)
+Enunciado: Implemente uma fila com operações textuais: CHEGA nome, ATENDE, PRIORITARIO nome (entra na frente). Ao final, imprima a ordem de atendimentos e quem ficou sem ser atendido.
+Entrada (exemplo): CHEGA Ana, CHEGA Bia, PRIORITARIO João, ATENDE, ATENDE
+Saída (exemplo): atendidos: João, Ana; na fila: Bia.

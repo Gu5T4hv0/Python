@@ -1,8 +1,9 @@
-'use client';
+"use client";
 
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import Link from 'next/link';
+import { useTranslation } from '@/components/TranslationsProvider';
 
 interface Question {
   id: string;
@@ -26,6 +27,7 @@ export default function QuestionsGrid() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
+  const { t, locale } = useTranslation();
 
   useEffect(() => {
     const fetchQuestions = async () => {
@@ -90,7 +92,8 @@ export default function QuestionsGrid() {
   );
 
   const formatDate = (date: string) => {
-    return new Date(date).toLocaleDateString('pt-BR', {
+    const lang = locale === 'pt-BR' ? 'pt-BR' : 'en-US';
+    return new Date(date).toLocaleDateString(lang, {
       day: '2-digit',
       month: 'short',
       year: 'numeric',
@@ -100,7 +103,7 @@ export default function QuestionsGrid() {
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
-        <p className="text-gray-600">Carregando perguntas...</p>
+        <p className="text-gray-600">{t('questions.loading')}</p>
       </div>
     );
   }
@@ -122,19 +125,28 @@ export default function QuestionsGrid() {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-8">
+          <Link
+            href={`/${locale}`}
+            className="text-blue-600 hover:underline text-sm mb-2 inline-block"
+          >
+            {locale === 'pt-BR' ? '← Voltar para home' : '← Back to home'}
+          </Link>
           <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            🎤 Feed de Perguntas
+            🎤 {t('questions.title')}
           </h1>
           <p className="text-gray-600">
-            {questions.length} pergunta{questions.length !== 1 ? 's' : ''} aberta
-            {questions.length !== 1 ? 's' : ''}
+            {questions.length === 1
+              ? t('questions.count_one')
+              : t('questions.count_many')}
           </p>
         </div>
 
         {/* Filtro por tags */}
         {allTags.length > 0 && (
           <div className="mb-8">
-            <p className="text-sm font-semibold text-gray-700 mb-3">Filtrar por tags:</p>
+            <p className="text-sm font-semibold text-gray-700 mb-3">
+              {t('questions.filter_label')}
+            </p>
             <div className="flex flex-wrap gap-2">
               <button
                 onClick={() => setSelectedTag(null)}
@@ -144,7 +156,7 @@ export default function QuestionsGrid() {
                     : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                 }`}
               >
-                Todas
+                {t('questions.filter_all')}
               </button>
               {allTags.map((tag) => (
                 <button
@@ -166,18 +178,23 @@ export default function QuestionsGrid() {
         {/* Lista de perguntas */}
         {questions.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-gray-600 mb-4">Nenhuma pergunta encontrada</p>
+            <p className="text-gray-600 mb-4">
+              {t('questions.empty')}
+            </p>
             <Link
-              href="/create-question"
+              href={`/${locale}/create-question`}
               className="inline-block text-blue-600 hover:underline font-semibold"
             >
-              Seja o primeiro a fazer uma pergunta →
+              {t('questions.empty_cta')}
             </Link>
           </div>
         ) : (
           <div className="space-y-4">
             {questions.map((question) => (
-              <Link key={question.id} href={`/questions/${question.id}`}>
+              <Link
+                key={question.id}
+                href={`/${locale}/questions/${question.id}`}
+              >
                 <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition p-6 cursor-pointer border border-gray-200">
                   {/* Título */}
                   <h2 className="text-xl font-semibold text-gray-900 mb-2 hover:text-blue-600">
@@ -222,7 +239,7 @@ export default function QuestionsGrid() {
                   {/* Media indicator */}
                   {question.media_url && (
                     <div className="mt-3 text-xs text-gray-500">
-                      📎 Contém mídia
+                      {t('questions.has_media')}
                     </div>
                   )}
                 </div>

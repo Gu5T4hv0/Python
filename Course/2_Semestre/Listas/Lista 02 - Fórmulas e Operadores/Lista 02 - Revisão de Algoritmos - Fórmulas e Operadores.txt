@@ -1,0 +1,143 @@
+Lista de Exercícios – Funções com Fórmulas
+
+1. Velocidade Média
+Enunciado: Crie uma função que receba a distância percorrida (em metros) e o tempo gasto (em segundos) e calcule a velocidade média usando a fórmula:
+
+ 
+v=td​
+
+Função sugerida: calcular_velocidade(d, t)
+
+2. Área de um Círculo
+Enunciado: Crie uma função que receba o raio de um círculo e calcule sua área usando a fórmula:
+
+A=π⋅r2
+
+Função sugerida: area_circulo(r)
+
+3. Perímetro de um Retângulo
+Enunciado: Crie uma função que receba o comprimento e a largura de um retângulo e calcule seu perímetro:
+
+P=2⋅(c+l)
+
+Função sugerida: perimetro_retangulo(c, l)
+
+4. Área de um Triângulo
+Enunciado: Crie uma função que receba a base e a altura de um triângulo e calcule sua área:
+
+ 
+A=2b⋅h​
+
+Função sugerida: area_triangulo(b, h)
+
+5. Fórmula de Bhaskara
+Enunciado: Crie uma função que receba os coeficientes a, b e c de uma equação quadrática e calcule suas raízes usando:
+
+ 
+Δ=b2−4ac,x=2a−b±Δ​​
+
+Função sugerida: bhaskara(a, b, c)
+
+6. IMC – Índice de Massa Corporal
+Enunciado: Crie uma função que receba peso (kg) e altura (m) e calcule o IMC:
+
+ 
+IMC=altura2peso​
+
+Função sugerida: calcular_imc(peso, altura)
+
+7. Conversão Celsius → Fahrenheit
+Enunciado: Crie uma função que receba uma temperatura em Celsius e a converta para Fahrenheit:
+
+ 
+F=C⋅59​+32
+
+Função sugerida: celsius_para_fahrenheit(c)
+
+8. Conversão Fahrenheit → Celsius
+Enunciado: Crie uma função que receba uma temperatura em Fahrenheit e a converta para Celsius:
+
+ 
+C=(F−32)⋅95​
+
+Função sugerida: fahrenheit_para_celsius(f)
+
+9. Juros Simples
+Enunciado: Crie uma função que calcule os juros simples de um capital P com taxa i ao longo do tempo t:
+
+J=P⋅i⋅t
+
+Função sugerida: calcular_juros_simples(P, i, t)
+
+10. Juros Compostos
+Enunciado: Crie uma função que calcule o montante de um capital com juros compostos:
+
+M=P⋅(1+i)t
+
+Função sugerida: calcular_juros_compostos(P, i, t)
+
+11. Conversão de Metros para Centímetros
+Enunciado: Crie uma função que receba um valor em metros e retorne o valor em centímetros.
+Função sugerida: metros_para_centimetros(m)
+
+12. Conversão de Horas para Minutos
+Enunciado: Crie uma função que receba uma quantidade de horas e retorne o total em minutos.
+Função sugerida: horas_para_minutos(h)
+
+13. Energia Cinética (Física)
+Enunciado: Crie uma função que calcule a energia cinética de um corpo:
+
+ 
+Ec​=21​mv2
+
+onde m é a massa em kg e v a velocidade em m/s.
+Função sugerida: energia_cinetica(m, v)
+
+14. Força (Segunda Lei de Newton)
+Enunciado: Crie uma função que receba massa (kg) e aceleração (m/s²) e calcule a força:
+
+F=m⋅a
+
+Função sugerida: calcular_forca(m, a)
+
+15. Distância Percorrida (Movimento Uniforme)
+Enunciado: Crie uma função que receba velocidade (m/s) e tempo (s) e calcule a distância percorrida:
+
+d=v⋅t
+
+Função sugerida: distancia_percorrida(v, t)
+
+16. Área de um Trapézio
+Enunciado: Crie uma função que receba as bases b1 e b2 e a altura h de um trapézio e calcule sua área:
+
+ 
+A=2(b1+b2)⋅h​
+
+Função sugerida: area_trapezio(b1, b2, h)
+
+17. Conversão de km/h para m/s
+Enunciado: Crie uma função que converta velocidade de km/h para m/s:
+
+ 
+vm/s​=3.6vkm/h​​
+
+Função sugerida: kmh_para_ms(v)
+
+18. Conversão de m/s para km/h
+Enunciado: Crie uma função que converta velocidade de m/s para km/h:
+
+vkm/h​=vm/s​⋅3.6
+
+Função sugerida: ms_para_kmh(v)
+
+19. Volume de uma Esfera
+Enunciado: Crie uma função que receba o raio de uma esfera e calcule seu volume:
+
+ 
+V=34​πr3
+
+Função sugerida: volume_esfera(r)
+
+20. Conversão de Dias para Segundos
+Enunciado: Crie uma função que receba uma quantidade de dias e retorne o total de segundos.
+Função sugerida: dias_para_segundos(d)

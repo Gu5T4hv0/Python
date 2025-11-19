@@ -1,0 +1,17 @@
+[
+  {
+    "date": "2025-01-01",
+    "temperatura": 30,
+    "chuva": 0
+  },
+  {
+    "date": "2025-01-02",
+    "temperatura": 28,
+    "chuva": 5
+  },
+  {
+    "date": "2025-01-03",
+    "temperatura": 31,
+    "chuva": 0
+  }
+]

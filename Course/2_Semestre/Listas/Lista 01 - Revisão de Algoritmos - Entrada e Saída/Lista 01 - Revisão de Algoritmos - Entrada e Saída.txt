@@ -1,0 +1,86 @@
+Parte 1 – Entrada e Saída de Dados (5 questões)
+1.Função saudacao_usuario()
+Solicite ao usuário seu nome e sua idade e exiba a frase:
+Olá [nome], você tem [idade] anos.
+
+2.Função soma_dois_numeros()
+Peça ao usuário dois números inteiros e mostre a soma entre eles.
+
+3.Função mostrar_preco_produto()
+Receba o nome de um produto e seu preço e exiba:
+O produto [nome] custa R$ [preço].
+
+4.Função converter_metros_para_centimetros()
+Solicite ao usuário um valor em metros e exiba esse valor convertido para centímetros.
+
+5.Função mostrar_altura_peso()
+Peça ao usuário sua altura e peso, depois exiba:
+Sua altura é [altura] m e seu peso é [peso] kg.
+
+Parte 2 – Tipos de Dados (4 questões)
+6.Função mostrar_tipos_dados()
+Leia um valor inteiro, um valor decimal e uma palavra, e depois mostre na tela cada valor e seu respectivo tipo.
+
+7.Função mostrar_parte_inteira()
+Peça ao usuário um número decimal e exiba apenas sua parte inteira.
+
+8.Função converter_string_para_inteiro()
+Receba do usuário um número em formato de texto (string) e converta-o para inteiro antes de realizar uma soma.
+
+9.Função mostrar_tipo_booleano()
+Receba um valor booleano (True ou False) e mostre seu tipo de dado.
+
+Parte 3 – Operadores Aritméticos (4 questões)
+10.Função operacoes_basicas()
+Solicite dois números ao usuário e mostre:
+
+Soma
+
+Subtração
+
+Multiplicação
+
+Divisão
+
+11.Função potencia_e_raiz()
+Peça ao usuário um número e mostre:
+
+O quadrado desse número
+
+A raiz quadrada desse número
+
+12.Função aplicar_desconto()
+Receba o valor de um produto e aplique 10% de desconto, mostrando o valor final.
+
+13.Função resto_divisao()
+Peça dois números e mostre o resto da divisão do primeiro pelo segundo.
+
+Parte 4 – Operadores Lógicos e Relacionais (4 questões)
+14.Função comparar_numeros()
+Peça dois números e informe se o primeiro é maior que o segundo.
+
+15.Função verificar_tres_iguais()
+Receba três números e verifique se todos são iguais (usando operador lógico and).
+
+16.Função operacoes_booleanas()
+Receba dois valores booleanos e mostre o resultado das operações:
+
+and
+
+or
+
+not (em cada valor separadamente)
+
+17.Função verificar_idade_entre()
+Pergunte a idade de uma pessoa e verifique se ela tem entre 18 e 30 anos.
+
+Parte 5 – Variáveis (3 questões)
+18.Função informacoes_pessoais()
+Armazene nome, idade e cidade em variáveis e exiba:
+Meu nome é [nome], tenho [idade] anos e moro em [cidade].
+
+19.Função dobrar_valor()
+Receba um número e troque o valor dessa variável para o dobro do valor digitado, depois exiba.
+
+20.Função variaveis_dependentes()
+Crie uma variável que guarde o valor 10. Depois crie outra variável que receba o valor da primeira somado com 5 e exiba ambas.

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
+import { useTranslation } from '@/components/TranslationsProvider';
 
 export interface QuestionData {
   title: string;
@@ -13,6 +14,7 @@ export interface QuestionData {
 }
 
 export default function CreateQuestionForm() {
+  const { t, locale } = useTranslation();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [tags, setTags] = useState('');
@@ -30,17 +32,17 @@ export default function CreateQuestionForm() {
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
 
-    if (!title.trim()) newErrors.title = 'Título é obrigatório';
-    if (title.length > 200) newErrors.title = 'Título muito longo (máx 200 caracteres)';
+    if (!title.trim()) newErrors.title = t('create.error_title_required');
+    if (title.length > 200) newErrors.title = t('create.error_title_too_long');
 
-    if (!description.trim()) newErrors.description = 'Descrição é obrigatória';
-    if (description.length < 10) newErrors.description = 'Descrição deve ter pelo menos 10 caracteres';
+    if (!description.trim()) newErrors.description = t('create.error_description_required');
+    if (description.length < 10) newErrors.description = t('create.error_description_too_short');
 
-    if (price < 5 || price > 500) newErrors.price = 'Preço deve estar entre R$5 e R$500';
+    if (price < 5 || price > 500) newErrors.price = t('create.error_price_range');
 
     if (mediaFile) {
       if (mediaFile.size > MAX_SIZE) {
-        newErrors.media = `Arquivo muito grande (máx 50MB). Tamanho: ${(mediaFile.size / 1024 / 1024).toFixed(2)}MB`;
+        newErrors.media = t('question.media_limit');
       }
 
       const validTypes = mediaType === 'audio' 
@@ -48,11 +50,13 @@ export default function CreateQuestionForm() {
         : ['video/mp4', 'video/quicktime'];
 
       if (!validTypes.includes(mediaFile.type)) {
-        newErrors.media = `Tipo de arquivo inválido. Use: ${mediaType === 'audio' ? 'mp3, m4a' : 'mp4, mov'}`;
+        newErrors.media = mediaType === 'audio'
+          ? t('create.error_media_type_audio')
+          : t('create.error_media_type_video');
       }
 
       if (mediaDuration !== null && mediaDuration > MAX_DURATION) {
-        newErrors.media = `Duração excede o máximo de 3 minutos (atual: ${Math.floor(mediaDuration)}s)`;
+        newErrors.media = t('question.media_too_long');
       }
     }
 
@@ -83,7 +87,7 @@ export default function CreateQuestionForm() {
         const duration = Number(mediaEl.duration || 0);
         setMediaDuration(Number.isFinite(duration) ? duration : null);
         if (duration && duration > MAX_DURATION) {
-          setErrors((prev) => ({ ...prev, media: 'Duração máxima de 3 minutos excedida.' }));
+          setErrors((prev) => ({ ...prev, media: t('question.media_too_long') }));
           setMediaFile(null);
           setMediaDuration(null);
           // limpar input
@@ -92,10 +96,10 @@ export default function CreateQuestionForm() {
       };
       mediaEl.onerror = () => {
         URL.revokeObjectURL(objectUrl);
-        setErrors((prev) => ({ ...prev, media: 'Não foi possível ler a duração da mídia.' }));
+        setErrors((prev) => ({ ...prev, media: t('question.media_duration_error') }));
       };
     } catch (_) {
-      setErrors((prev) => ({ ...prev, media: 'Falha ao processar a mídia selecionada.' }));
+      setErrors((prev) => ({ ...prev, media: t('create.error_media_process') }));
     }
   };
 
@@ -128,7 +132,7 @@ export default function CreateQuestionForm() {
         const { data: userData } = await supabase.auth.getUser();
         const userId = userData.user?.id;
         if (!userId) {
-          setErrors({ submit: 'Você precisa estar logado para enviar uma pergunta.' });
+          setErrors({ submit: t('create.error_must_be_logged') });
           setLoading(false);
           return;
         }
@@ -154,9 +158,9 @@ export default function CreateQuestionForm() {
               .toLowerCase()
               .includes('row level security') || String(raw).toLowerCase().includes('row-level security');
             const hint = rlsHint || maybeStatus === 403
-              ? ' Verifique as policies do bucket question-media para permitir INSERT por authenticated.'
+              ? t('create.error_media_rls_hint')
               : '';
-            setErrors({ submit: `Erro ao enviar arquivo de mídia: ${uploadError.message || 'falha desconhecida.'}${hint}` });
+            setErrors({ submit: `${t('create.error_media_upload')} ${hint}` });
             setLoading(false);
             return;
           }
@@ -179,6 +183,7 @@ export default function CreateQuestionForm() {
             media_url,
             media_type: questionData.mediaType === 'none' ? null : questionData.mediaType,
             media_duration_seconds: mediaDuration ? Math.floor(mediaDuration) : null,
+            locale,
           }),
         });
 
@@ -200,7 +205,7 @@ export default function CreateQuestionForm() {
       setMediaType('none');
       setMediaDuration(null);
     } catch (error) {
-      setErrors({ submit: 'Erro ao enviar pergunta. Tente novamente.' });
+      setErrors({ submit: t('create.error_submit_question') });
     } finally {
       setLoading(false);
     }
@@ -210,7 +215,7 @@ export default function CreateQuestionForm() {
     <form onSubmit={handleSubmit} className="space-y-6">
       {success && (
         <div className="p-4 bg-green-100 border border-green-400 text-green-700 rounded">
-          ✓ Pergunta enviada com sucesso!
+          {t('create.success_message')}
         </div>
       )}
 
@@ -223,14 +228,14 @@ export default function CreateQuestionForm() {
       {/* Título */}
       <div>
         <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
-          Título da pergunta *
+          {t('create.form_title_label')}
         </label>
         <input
           id="title"
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          placeholder="Ex: Como conseguir meus primeiros 100 usuários?"
+          placeholder={t('create.form_title_placeholder')}
           className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
             errors.title ? 'border-red-500' : 'border-gray-300'
           }`}
@@ -241,13 +246,13 @@ export default function CreateQuestionForm() {
       {/* Descrição */}
       <div>
         <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
-          Descrição detalhada *
+          {t('create.form_description_label')}
         </label>
         <textarea
           id="description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          placeholder="Detalhe sua dúvida, contexto, e o que você já tentou..."
+          placeholder={t('create.form_description_placeholder')}
           rows={5}
           className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
             errors.description ? 'border-red-500' : 'border-gray-300'
@@ -259,14 +264,14 @@ export default function CreateQuestionForm() {
       {/* Tags */}
       <div>
         <label htmlFor="tags" className="block text-sm font-medium text-gray-700 mb-2">
-          Tags (separadas por vírgula)
+          {t('create.form_tags_label')}
         </label>
         <input
           id="tags"
           type="text"
           value={tags}
           onChange={(e) => setTags(e.target.value)}
-          placeholder="Ex: startup, marketing, growth"
+          placeholder={t('create.form_tags_placeholder')}
           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
@@ -274,7 +279,7 @@ export default function CreateQuestionForm() {
       {/* Preço */}
       <div>
         <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-2">
-          Preço (R$) *
+          {t('create.form_price_label')}
         </label>
         <input
           id="price"
@@ -287,13 +292,12 @@ export default function CreateQuestionForm() {
             errors.price ? 'border-red-500' : 'border-gray-300'
           }`}
         />
-        <p className="text-xs text-gray-500 mt-1">Você receberá 80% (R${(price * 0.8).toFixed(2)})</p>
         {errors.price && <p className="text-red-500 text-sm mt-1">{errors.price}</p>}
       </div>
 
       {/* Upload de mídia */}
       <div className="border-2 border-dashed border-gray-300 rounded-lg p-6">
-        <p className="text-sm font-medium text-gray-700 mb-4">Adicionar mídia (opcional)</p>
+        <p className="text-sm font-medium text-gray-700 mb-4">{t('question.media_optional')}</p>
 
         <div className="space-y-4">
           <div className="flex gap-4">
@@ -303,7 +307,7 @@ export default function CreateQuestionForm() {
                 checked={mediaType === 'audio'}
                 onChange={() => setMediaType('audio')}
               />
-              <span className="text-sm">🎙️ Áudio (mp3, m4a)</span>
+              <span className="text-sm">🎙️ {t('question.media_audio')} (mp3, m4a)</span>
             </label>
             <label className="flex items-center gap-2 cursor-pointer">
               <input
@@ -311,7 +315,7 @@ export default function CreateQuestionForm() {
                 checked={mediaType === 'video'}
                 onChange={() => setMediaType('video')}
               />
-              <span className="text-sm">🎥 Vídeo (mp4, mov)</span>
+              <span className="text-sm">🎥 {t('question.media_video')} (mp4, mov)</span>
             </label>
             <label className="flex items-center gap-2 cursor-pointer">
               <input
@@ -319,7 +323,7 @@ export default function CreateQuestionForm() {
                 checked={mediaType === 'none'}
                 onChange={() => setMediaType('none')}
               />
-              <span className="text-sm">Nenhum</span>
+              <span className="text-sm">{t('question.media_none')}</span>
             </label>
           </div>
 
@@ -342,11 +346,14 @@ export default function CreateQuestionForm() {
                     📎 {mediaFile.name} ({(mediaFile.size / 1024 / 1024).toFixed(2)}MB)
                   </p>
                   {mediaDuration !== null && (
-                    <p className="text-xs text-gray-600 mt-1">Duração: {formatDuration(mediaDuration)} {mediaDuration > MAX_DURATION ? '(excede 3min)' : ''}</p>
+                    <p className="text-xs text-gray-600 mt-1">
+                      {t('question.media_duration_label')} {formatDuration(mediaDuration)}{' '}
+                      {mediaDuration > MAX_DURATION ? '(> 3min)' : ''}
+                    </p>
                   )}
                 </div>
               )}
-              <p className="text-xs text-gray-500 mt-2">Máximo 3 minutos, 50MB</p>
+              <p className="text-xs text-gray-500 mt-2">{t('question.media_limit')}</p>
             </div>
           )}
 
@@ -360,7 +367,7 @@ export default function CreateQuestionForm() {
         disabled={loading}
         className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-400 transition"
       >
-        {loading ? '⏳ Enviando...' : '🚀 Enviar Pergunta'}
+        {loading ? t('create.form_sending') : t('create.form_submit')}
       </button>
     </form>
   );

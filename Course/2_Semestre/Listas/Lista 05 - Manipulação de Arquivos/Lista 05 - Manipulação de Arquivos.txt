@@ -1,0 +1,77 @@
+1.Cadastro de Contatos em TXT
+Enunciado: Armazene cada contato em uma linha no formato nome;telefone1,telefone2,.... Implemente operações: ADD, DEL, FIND, LIST. Grave e leia do mesmo arquivo.
+Entrada (exemplo): ADD Ana;11-9999-1234, ADD Bia;11-8888-0000, FIND Ana
+Saída (exemplo): Ana;11-9999-1234.
+
+2.Relatório de Vendas (CSV)
+Enunciado: Dado um vendas.csv com colunas data, produto, qtd, preco, calcule faturamento total, por produto e por mês (AAAA-MM). Gere um arquivo relatorio.txt.
+Entrada (exemplo): linhas como 2025-03-01,caneta,10,2.50
+Saída (exemplo): em relatorio.txt, total=..., caneta=..., 2025-03=....
+
+3.Leitura de Log e Contagem de Severidades
+Enunciado: Leia um arquivo de log onde cada linha começa com INFO|WARN|ERROR|DEBUG. Conte ocorrências por nível e liste as 5 mensagens ERROR mais recentes.
+Entrada (exemplo): várias linhas
+Saída (exemplo): INFO=15, WARN=4, ERROR=2, DEBUG=20, últimos ERROR: [...].
+
+4.Busca e Índice Invertido (TXT)
+Enunciado: Dado um texto grande, crie um índice invertido (palavra → posições). Permita consultas por termo, retornando em quais posições/linhas ele aparece. Salve o índice em JSON.
+Entrada (exemplo): arquivo livro.txt
+Saída (exemplo): "algoritmo": [12, 45, 46].
+
+5.Frequência de Palavras com Stopwords
+Enunciado: Leia um .txt, remova pontuação e stopwords (arquivo stopwords.txt), e gere um top_20.csv com as 20 palavras mais frequentes e suas contagens.
+Entrada (exemplo): texto.txt e stopwords.txt
+Saída (exemplo): top_20.csv com palavra,contagem.
+
+6.Controle de Presença (CSV)
+Enunciado: Um arquivo presenca.csv tem colunas aluno, data, presente(0/1). Gere um relatório com faltas acumuladas por aluno e percentual de presença.
+Entrada (exemplo): Ana,2025-03-10,1
+Saída (exemplo): Ana: 80% presença (faltas=2/10).
+
+7. Programa que copia conteúdo de um arquivo para outro
+Escreva um programa que abra um arquivo de texto existente (por exemplo, entrada.txt) e copie todo o seu conteúdo para um novo arquivo chamado saida.txt.
+
+Entrada: um arquivo entrada.txt já existente com algumas linhas de texto.
+
+Saída: criação do arquivo saida.txt com o mesmo conteúdo.
+
+Exemplo de entrada (entrada.txt):
+
+Python é divertido.
+Aprender programação é importante.
+Exemplo de saída (saida.txt):
+
+Python é divertido.
+Aprender programação é importante.
+8. Programa que insere texto ao final de um arquivo
+Faça um programa que peça ao usuário para digitar uma frase e a salve no final de um arquivo chamado anotacoes.txt. O programa deve manter o que já estava no arquivo, adicionando apenas a nova frase.
+
+Entrada: "Hoje estudei algoritmos."
+
+Saída (anotacoes.txt após execução):
+
+[conteúdo já existente no arquivo]
+Hoje estudei algoritmos.
+9. Programa que lê números de um arquivo e calcula a média
+Crie um programa que leia números inteiros salvos em um arquivo numeros.txt (um número por linha) e calcule a média aritmética desses valores.
+
+Entrada (numeros.txt):
+
+10
+20
+30
+40
+Saída no console:
+
+A média dos números é 25.0
+10. Programa que substitui palavras em um arquivo
+Escreva um programa que leia um arquivo de texto chamado mensagem.txt e substitua todas as ocorrências da palavra "erro" por "acerto", salvando o resultado em um novo arquivo chamado mensagem_corrigida.txt.
+
+Entrada (mensagem.txt):
+
+O aluno cometeu um erro.
+Outro erro foi encontrado.
+Saída (mensagem_corrigida.txt):
+
+O aluno cometeu um acerto.
+Outro acerto foi encontrado.

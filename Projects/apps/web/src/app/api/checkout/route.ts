@@ -28,6 +28,7 @@ export async function POST(req: NextRequest) {
       media_url,
       media_type,
       media_duration_seconds,
+      locale,
     } = body || {};
 
     if (!user_id || !title || !description || !price) {
@@ -36,6 +37,8 @@ export async function POST(req: NextRequest) {
 
     const stripe = getStripe();
     const baseUrl = getBaseUrl(req);
+
+    const requestedLocale = locale === 'pt-BR' || locale === 'en' ? locale : undefined;
 
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
@@ -50,8 +53,12 @@ export async function POST(req: NextRequest) {
           },
         },
       ],
-      success_url: `${baseUrl}/success`,
-      cancel_url: `${baseUrl}/cancel`,
+      success_url: requestedLocale
+        ? `${baseUrl}/${requestedLocale}/success`
+        : `${baseUrl}/success`,
+      cancel_url: requestedLocale
+        ? `${baseUrl}/${requestedLocale}/cancel`
+        : `${baseUrl}/cancel`,
       metadata: {
         user_id,
         title,

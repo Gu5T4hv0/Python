@@ -1,0 +1,29 @@
+1. Controle de Presença
+Uma escola tem um arquivo presenca.csv com colunas Aluno, Data, Presente. Use Pandas para contar quantas faltas cada aluno teve.
+
+2. Estoque de Supermercado
+Um arquivo estoque.json contém produtos com nome, quantidade e preço. Use Pandas para calcular o valor total do estoque.
+
+3. Ranking de Jogos
+Um arquivo jogos.txt lista jogadores e suas pontuações. Use Pandas para gerar o ranking e exibir o campeão.
+
+4. Análise de Notas
+Um arquivo notas.csv contém colunas Aluno, Prova1, Prova2. Use Pandas para calcular a média de cada aluno e listar os aprovados (nota ≥ 6).
+
+5. Filmes Favoritos
+Um arquivo filmes.json lista usuários e filmes avaliados com notas de 1 a 5. Calcule a média de avaliação de cada filme.
+
+6. Controle Financeiro
+Um arquivo gastos.csv tem colunas Data, Categoria, Valor. Use Pandas para somar os gastos por categoria e mostrar qual foi a mais cara.
+
+7. Análise de Vendas
+Um arquivo vendas.csv registra Produto, Quantidade, Preço. Calcule o faturamento total de cada produto e plote em gráfico de barras.
+
+8. Dados Climáticos
+Um arquivo clima.json contém registros diários com data, temperatura, chuva. Use Pandas para calcular a média da temperatura e quantos dias choveu.
+
+9. Cadastro de Clientes
+Um arquivo clientes.csv tem colunas Nome, Idade, Cidade. Use Pandas para calcular a média de idade por cidade.
+
+10. Transporte Público
+Um arquivo onibus.txt registra viagens (linha, passageiros). Use Pandas para calcular o total de passageiros por linha e exibir a linha mais movimentada.

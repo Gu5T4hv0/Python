@@ -1,0 +1,17 @@
+[
+  {
+    "nome": "Arroz",
+    "quantidade": 50,
+    "preço": 5.5
+  },
+  {
+    "nome": "Feijão",
+    "quantidade": 40,
+    "preço": 7.2
+  },
+  {
+    "nome": "Açúcar",
+    "quantidade": 30,
+    "preço": 4.0
+  }
+]

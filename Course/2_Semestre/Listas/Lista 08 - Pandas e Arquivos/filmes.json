@@ -1,0 +1,22 @@
+[
+  {
+    "usuario": "Ana",
+    "filme": "Matrix",
+    "nota": 5
+  },
+  {
+    "usuario": "Ana",
+    "filme": "Avatar",
+    "nota": 4
+  },
+  {
+    "usuario": "Bruno",
+    "filme": "Matrix",
+    "nota": 4
+  },
+  {
+    "usuario": "Carlos",
+    "filme": "Avatar",
+    "nota": 3
+  }
+]
