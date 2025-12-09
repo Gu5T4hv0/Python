@@ -1,14 +1,16 @@
+import winsound
 import json
 import sys
 import os
 from datetime import date, timedelta
 from typing import Dict, Any
+import time
 
 # --- Função para tocar som de erro ---
 def tocar_som_erro():
     try:
-        import winsound
-        caminho_erro = r"C:\Users\Cyntia Trindade\Downloads\erro.wav"
+        import winsound 
+        caminho_erro = r"C:\erro\erro.wav"
         if os.path.exists(caminho_erro):
             winsound.PlaySound(caminho_erro, winsound.SND_FILENAME | winsound.SND_ASYNC)
         else:
@@ -22,7 +24,7 @@ def tocar_som_erro():
 def limpar_tela():
     os.system('cls' if os.name == 'nt' else 'clear')
     largura = 120  # ajuste conforme necessário
-    titulo = "/////////////////////////////////////////////////////////////////////////////////////////// Sharp-Fit ///////////////////////////////////////////////////////////////////////////////////"
+    titulo = "/////////////////////////////////////////////////////////////////////////// Sharp-Fit /////////////////////////////////////////////////////////////////////////////"
     print(titulo.center(largura))
     print("\n")
 
@@ -328,10 +330,14 @@ try:
             peso = int(input('Por favor, nos diga seu peso em kg: '))
             idade = int(input('Por favor, nos diga sua idade: '))
         except ValueError:
-            tocar_som_erro()
+            
             print("Entrada inválida. Altura deve ser número decimal (ex: 1.75) e Peso/Idade números inteiros.")
+            tocar_som_erro()
+            time.sleep(14)
             sys.exit(1)
+            
 
+        limpar_tela()
         if altura <= 0 or peso <= 0 or idade <= 0:
             print("Valores inválidos para cadastro.")
             sys.exit(1)
@@ -347,275 +353,319 @@ try:
             print(f"{nome}, você está na classificação: Peso ideal")
         else:
             print(f"{nome}, você está na classificação: Acima do peso")
-
+        
     # ============================ ESCOLHA DO TREINO ============================
-    try:
-        escolha = int(input("\nDeseja um treino recomendado [1] ou criar seu próprio treino [2]? "))
-    except ValueError:
-        tocar_som_erro()
-        print("Opção inválida.")
-        sys.exit(1)
-
-    if escolha == 1:
-        imc = dados_do_usuario[2]
-        limpar_tela()
-        if imc < 18.5:
-            print("\nRecomendado: Exercícios para GANHO DE MASSA MUSCULAR")
-            for item in exercicios_ganhar_massa:
-                print(item)
-                escolha_lista_1 = input('gostaria de usar essa lista ? ')
+    rodando = True
+    while rodando:    
+        try:
+            
+            escolha = int(input("\nDeseja um treino recomendado [1] ou criar seu próprio treino [2]? "))
+        except ValueError:
+            tocar_som_erro()
+            print("Opção inválida.")
+            sys.exit(1)
+        #gostaria de usar essa lista
+        if escolha == 1:
+            imc = dados_do_usuario[2]
+            limpar_tela()
+            if imc < 18.5:
+                print("\nRecomendado: Exercícios para GANHO DE MASSA MUSCULAR")
+                for item in exercicios_ganhar_massa:
+                    print(item)
+                escolha_lista_1 = input('gostaria de usar essa lista ? (sim/não) ')
                 if escolha_lista_1 == 'sim':
                     with open('lista_pre_pronta.json', 'w', encoding='utf-8') as f:
                         json.dump(exercicios_ganhar_massa, f, ensure_ascii=False, indent=2)
-                
-        elif 18.5 <= imc < 24.9:
-            print("\nRecomendado: Exercícios para DEFINIÇÃO")
-            for item in exercicios_ideal:
-                print(item)
-                escolha_lista_2 = input('gostaria de usar essa lista ? ')
+                    
+            elif 18.5 <= imc < 24.9:
+                print("\nRecomendado: Exercícios para DEFINIÇÃO")
+                for item in exercicios_ideal:
+                    print(item)
+                escolha_lista_2 = input('gostaria de usar essa lista (sim/não)  ? ')
                 if escolha_lista_2 == 'sim':
                     with open('lista_pre_pronta.json', 'w', encoding='utf-8') as f:
                         json.dump(exercicios_ideal, f, ensure_ascii=False, indent=2)
-                    
-        else:
-            print("\nRecomendado: Exercícios para PERDA DE PESO")
-            for item in exercicios_emagrecer:
-                print(item)
-                escolha_lista_3 = input('gostaria de usar essa lista ? ')
+                        
+            else:
+                print("\nRecomendado: Exercícios para PERDA DE PESO")
+                for item in exercicios_emagrecer:
+                    print(item)
+                escolha_lista_3 = input('gostaria de usar essa lista ? (sim/não)  ')
                 if escolha_lista_3 == 'sim':
                     with open('lista_pre_pronta.json', 'w', encoding='utf-8') as f:
                         json.dump(exercicios_emagrecer, f, ensure_ascii=False, indent=2)
-
-        while True:
-            print("\nDeseja ver outra categoria?")
-            print("1 - Lista para ganho de massa muscular")
-            print("2 - Lista para definição")
-            print("3 - Lista para perda de peso")
-            print("0 - Sair")
-            opcao = input("Digite o número da opção desejada: ")
-            limpar_tela()
-            if opcao == "1":
-                for item in exercicios_ganhar_massa: print(item)
-                escolha_lista_alternativa_1 = input('Deseja salvar essa lista ? ')
-                if escolha_lista_alternativa_1 == 'sim':
-                    with open('lista_pre_pronta.json', 'w', encoding='utf-8') as f:
-                        json.dump(exercicios_ganhar_massa, f, ensure_ascii=False, indent=2)
-            elif opcao == "2":
-                for item in exercicios_ideal: print(item)
-                escolha_lista_alternativa_2 = input('Deseja salvar essa lista ? ')
-                if escolha_lista_alternativa_2 == 'sim':
-                    with open('lista_pre_pronta.json', 'w', encoding='utf-8') as f:
-                        json.dump(exercicios_ideal, f, ensure_ascii=False, indent=2)
-            elif opcao == "3":
-                for item in exercicios_emagrecer: print(item)
-                escolha_lista_alternativa_3 = input('Deseja salvar essa lista ? ')
-                if escolha_lista_alternativa_3 == 'sim':
-                    with open('lista_pre_pronta.json', 'w', encoding='utf-8') as f:
-                        json.dump(exercicios_emagrecer, f, ensure_ascii=False, indent=2)
-            
-            if opcao == "0":
-                # NOVO PASSO: PERGUNTAR SE DESEJA REGISTRAR O TREINO DE HOJE (ADICIONAL 2)
-                confirma_registro = input("\nO treino de hoje foi concluído? (sim/não): ").strip().lower()
-                if confirma_registro == 'sim':
-                    if registrar_treino_concluido():
-                        print("Treino registrado! 🎉")
-                    else:
-                        print("Treino de hoje já estava registrado.")
+            loop_ativo_escolha1 = True
+            while loop_ativo_escolha1:
+                print("\nDeseja ver outra categoria?")
+                print("1 - Lista para ganho de massa muscular")
+                print("2 - Lista para definição")
+                print("3 - Lista para perda de peso")
+                print("4 - Mostrar o treino escolhido anteriormente")
+                print("5 - Retornar para o menu")
+                print("0 - Sair")
+                opcao = input("Digite o número da opção desejada: ")
+                limpar_tela()
+                if opcao == "5":
+                    loop_ativo_escolha1 = False
+                    continue
+                if opcao == "1":
+                    for item in exercicios_ganhar_massa: print(item)
+                    escolha_lista_alternativa_1 = input('Deseja salvar essa lista ?[sim/não] ')
+                    if escolha_lista_alternativa_1 == 'sim':
+                        with open('lista_pre_pronta.json', 'w', encoding='utf-8') as f:
+                            json.dump(exercicios_ganhar_massa, f, ensure_ascii=False, indent=2)
+                elif opcao == "2":
+                    for item in exercicios_ideal: print(item)
+                    escolha_lista_alternativa_2 = input('Deseja salvar essa lista ? [sim/não] ')
+                    if escolha_lista_alternativa_2 == 'sim':
+                        with open('lista_pre_pronta.json', 'w', encoding='utf-8') as f:
+                            json.dump(exercicios_ideal, f, ensure_ascii=False, indent=2)
+                elif opcao == "3":
+                    for item in exercicios_emagrecer: print(item)
+                    escolha_lista_alternativa_3 = input('Deseja salvar essa lista ? [sim/não] ')
+                    if escolha_lista_alternativa_3 == 'sim':
+                        with open('lista_pre_pronta.json', 'w', encoding='utf-8') as f:
+                            json.dump(exercicios_emagrecer, f, ensure_ascii=False, indent=2)
+                elif opcao == "4":
+                    try:
+                        with open('lista_pre_pronta.json', 'r', encoding='utf-8') as f:
+                            lista_de_exercicios_escolhidos_anteriormente = json.load(f)
+                            for item in lista_de_exercicios_escolhidos_anteriormente:
+                                print(item)
+                    except:
+                        print("Nenhum treino foi escolhido anteriormente!")
                 
-                print("\nObrigado por usar o app!")
-                exit()
+                if opcao == "0":
+                    # NOVO PASSO: PERGUNTAR SE DESEJA REGISTRAR O TREINO DE HOJE (ADICIONAL 2)
+                    confirma_registro = input("\nO treino de hoje foi concluído? (sim/não): ").strip().lower()
+                    if confirma_registro == 'sim':
+                        if registrar_treino_concluido():
+                            print("Treino registrado! 🎉")
+                        else:
+                            print("Treino de hoje já estava registrado.")
+                    
+                    print("\nObrigado por usar o app!")
+                    exit()
 
-    else:
-        # ============================ GERENCIAMENTO MANUAL ============================
-        estrutura_grupos = {
-            "peito_triceps_ombro": [],
-            "biceps_costas_antebraco": [],
-            "abdomen": [],
-            "perna": []
-        }
+        else:
+            # ============================ GERENCIAMENTO MANUAL ============================
+            estrutura_grupos = {
+                "peito_triceps_ombro": [],
+                "biceps_costas_antebraco": [],
+                "abdomen": [],
+                "perna": []
+            }
 
-        try:
-            with open('exercicios.json', 'r', encoding='utf-8') as f:
-                estrutura_grupos = json.load(f)
-        except FileNotFoundError:
-            pass
+            try:
+                with open('exercicios.json', 'r', encoding='utf-8') as f:
+                    estrutura_grupos = json.load(f)
+            except FileNotFoundError:
+                pass
 
-        grupos_opcoes = {
-            '0': ("peito_triceps_ombro", lista_peito_triceps_ombro),
-            '1': ("biceps_costas_antebraco", lista_biceps_costas_antebraco),
-            '2': ("abdomen", lista_abdomen),
-            '3': ("perna", lista_perna)
-        }
-
-        while True:
-            limpar_tela()
-            print("=== GERENCIAR TREINO PERSONALIZADO ===")
-            print("Escolha uma ação:")
-            print("0 - Adicionar exercício ➕ ")
-            print("1 - Remover exercício 🗑 ")
-            print("2 - Atualizar exercício 🔄 ")
-            print("3 - Buscar exercício 🔎 ")
-            print("4 - Listar todos os exercícios 📋 ")
-            print("5 - Sair 🔚 ")
-            acao = input("Opção: ").strip()
-
-            if acao == "5":
-                with open('exercicios.json', 'w', encoding='utf-8') as f:
-                    json.dump(estrutura_grupos, f, indent=4, ensure_ascii=False)
-
-                confirma_registro = input("\nO treino de hoje foi concluído? (sim/não): ").strip().lower()
-                if confirma_registro == 'sim':
-                    if registrar_treino_concluido():
-                        print("Treino registrado! 🎉")
-                    else:
-                        print("Treino de hoje já estava registrado.")
-                        
-                print("Treino salvo! Até a próxima.")
-                break
-
-            if acao == "4":  # Listar todos
+            grupos_opcoes = {
+                '0': ("peito_triceps_ombro", lista_peito_triceps_ombro),
+                '1': ("biceps_costas_antebraco", lista_biceps_costas_antebraco),
+                '2': ("abdomen", lista_abdomen),
+                '3': ("perna", lista_perna)
+            }
+            loop_ativo_escolha2 = True
+            while loop_ativo_escolha2:
                 limpar_tela()
-                print("\n--- TREINO COMPLETO ---")
-                rp_historico = carregar_rp_historico()
-                vazio = True
-                for grupo_nome, exercicios in estrutura_grupos.items():
-                    if exercicios:
-                        vazio = False
-                        print(f"\n{grupo_nome.upper()}:")
-                        for i, ex in enumerate(exercicios, 1):
-                            rp_atual = rp_historico.get(ex['Exercício'], 0.0)
-                            rp_info = f" (RP: {rp_atual:.1f} kg)" if rp_atual > 0 else ""
-                            print(f"  {i}. {ex['Exercício']} → {ex['S']} séries, {ex['R']} reps, {ex['P']} kg{rp_info}")
-                if vazio:
-                    print("Nenhum exercício adicionado ainda.")
-                input("\nPressione Enter para continuar...")
-                continue
+                print("=== GERENCIAR TREINO PERSONALIZADO ===")
+                print("Escolha uma ação:")
+                print("0 - Adicionar exercício ➕ ")
+                print("1 - Remover exercício 🗑 ")
+                print("2 - Atualizar exercício 🔄 ")
+                print("3 - Buscar exercício 🔎 ")
+                print("4 - Listar todos os exercícios 📋 ")
+                print("5 - Sair 🔚 ")
+                print("6 - Retornar para o menu")
+                acao = input("Opção: ").strip()
 
-            print("\nEscolha o grupo muscular:")
-            print("0 - Peito, Tríceps e Ombro")
-            print("1 - Bíceps, Costas e Antebraço")
-            print("2 - Abdômen")
-            print("3 - Pernas")
-            grupo_escolha = input("Grupo: ").strip()
-            if grupo_escolha not in grupos_opcoes:
-                print("Grupo inválido.")
-                input("Pressione Enter para continuar...")
-                continue
+                if acao == '6':
+                    loop_ativo_escolha2 = False
+                    continue
+                if acao == "5":
+                    with open('exercicios.json', 'w', encoding='utf-8') as f:
+                        json.dump(estrutura_grupos, f, indent=4, ensure_ascii=False)
 
-            chave_grupo, lista_disponivel = grupos_opcoes[grupo_escolha]
+                    confirma_registro = input("\nO treino de hoje foi concluído? (sim/não): ").strip().lower()
+                    if confirma_registro == 'sim':
+                        if registrar_treino_concluido():
+                            print("Treino registrado! 🎉")
+                        else:
+                            print("Treino de hoje já estava registrado.")
+                            
+                    print("Treino salvo! Até a próxima.")
+                    rodando = False
+                    break 
+        
 
-            # Adicionar
-            if acao == "0":
-                limpar_tela()
-                print(f"\nExercícios disponíveis em {chave_grupo}:")
-                for i, ex in enumerate(lista_disponivel, 1):
-                    print(f"{i}. {ex}")
-                num = input("\nNúmero do exercício para adicionar: ").strip()
-                try:
-                    num = int(num) - 1
-                    if num < 0 or num >= len(lista_disponivel):
-                        raise ValueError
-                    ex_nome = lista_disponivel[num]
-                    S = int(input("Quantas séries? "))
-                    R = int(input("Quantas repetições? "))
-                    P = float(input("Qual peso (kg)? "))
-                    estrutura_grupos[chave_grupo].append({'Exercício': ex_nome, 'S': S, 'R': R, 'P': P})
-                    print(f"{ex_nome} adicionado com sucesso!")
+                if acao == "4":  # Listar todos
+                    limpar_tela()
+                    print("\n--- TREINO COMPLETO ---")
+                    rp_historico = carregar_rp_historico()
+                    vazio = True
+                    for grupo_nome, exercicios in estrutura_grupos.items():
+                        if exercicios:
+                            vazio = False
+                            print(f"\n{grupo_nome.upper()}:")
+                            for i, ex in enumerate(exercicios, 1):
+                                rp_atual = rp_historico.get(ex['Exercício'], 0.0)
+                                rp_info = f" (RP: {rp_atual:.1f} kg)" if rp_atual > 0 else ""
+                                print(f"  {i}. {ex['Exercício']} → {ex['S']} séries, {ex['R']} reps, {ex['P']} kg{rp_info}")
+                    if vazio:
+                        try:
+                                with open('lista_pre_pronta.json','r',encoding='utf-8') as d:
+                                    listaes = json.load(d)
+                                    print("\n--- LISTA PRÉ-PRONTA ---")
 
-                    print(atualizar_rp_e_feedback(ex_nome, P))
+                                    for item in listaes:
+                                        item_str = str(item).strip()
 
-                except ValueError:
-                    tocar_som_erro()
-                    print("Entrada inválida. Use números inteiros para séries/repetições e números (com ponto ou vírgula) para peso.")
-                except:
-                    tocar_som_erro()
-                    print("Entrada inválida.")
-                input("Pressione Enter para continuar...")
+                                        if not item_str[:1].isdigit():
+                                            print(f"\n{item_str.upper()}:")
+    
+                                        else:
+                                            print(f"  {item_str}")
 
-            # Remover
-            elif acao == "1":
-                limpar_tela()
-                descisão = int(input("deseja excluir um exercicio[1] ou o treino inteiro[2]?"))
-                if descisão == 1:
-                    if not estrutura_grupos[chave_grupo]:
-                        print("Nenhum exercício para remover neste grupo.")
-                        input("Pressione Enter para continuar...")
-                        continue
-                    print(f"Exercícios atuais em {chave_grupo}:")
-                    for i, ex in enumerate(estrutura_grupos[chave_grupo], 1):
-                        print(f"{i}. {ex['Exercício']}")
-                    num = input("Número do exercício para remover: ").strip()
+                        except FileNotFoundError:
+                            print("Nenhum exercício adicionado ainda.")
+                    input("\nPressione Enter para continuar...")
+                    continue
+                print("\nEscolha o grupo muscular:")
+                print("0 - Peito, Tríceps e Ombro")
+                print("1 - Bíceps, Costas e Antebraço")
+                print("2 - Abdômen")
+                print("3 - Pernas")
+                grupo_escolha = input("Grupo: ").strip()
+                if grupo_escolha not in grupos_opcoes:
+                    print("Grupo inválido.")
+                    input("Pressione Enter para continuar...")
+                    continue
+
+                chave_grupo, lista_disponivel = grupos_opcoes[grupo_escolha]
+
+                # Adicionar
+                if acao == "0":
+                    limpar_tela()
+                    print(f"\nExercícios disponíveis em {chave_grupo}:")
+                    for i, ex in enumerate(lista_disponivel, 1):
+                        print(f"{i}. {ex}")
+                    num = input("\nNúmero do exercício para adicionar: ").strip()
                     try:
                         num = int(num) - 1
-                        removido = estrutura_grupos[chave_grupo].pop(num)
-                        print(f"{removido['Exercício']} removido com sucesso!")
+                        if num < 0 or num >= len(lista_disponivel):
+                            raise ValueError
+                        ex_nome = lista_disponivel[num]
+                        S = int(input("Quantas séries? "))
+                        R = int(input("Quantas repetições? "))
+                        P = float(input("Qual peso (kg)? "))
+                        estrutura_grupos[chave_grupo].append({'Exercício': ex_nome, 'S': S, 'R': R, 'P': P})
+                        print(f"{ex_nome} adicionado com sucesso!")
+
+                        print(atualizar_rp_e_feedback(ex_nome, P))
+
+                    except ValueError:
+                        tocar_som_erro()
+                        print("Entrada inválida. Use números inteiros para séries/repetições e números (com ponto ou vírgula) para peso.")
                     except:
                         tocar_som_erro()
                         print("Entrada inválida.")
                     input("Pressione Enter para continuar...")
-                else:
-                    estrutura_grupos[chave_grupo].clear()
-                    print("Treino excluído com sucesso.")
-                input("Pressione Enter para continuar...")
-            # Atualizar
-            elif acao == "2":
-                limpar_tela()
-                if not estrutura_grupos[chave_grupo]:
-                    print("Nenhum exercício para atualizar neste grupo.")
+
+                # Remover
+                elif acao == "1":
+                    limpar_tela()
+                    descisão = int(input("deseja excluir um exercicio[1] ou o treino inteiro[2]?"))
+                    if descisão == 1:
+                        if not estrutura_grupos[chave_grupo]:
+                            print("Nenhum exercício para remover neste grupo.")
+                            input("Pressione Enter para continuar...")
+                            continue
+                        print(f"Exercícios atuais em {chave_grupo}:")
+                        for i, ex in enumerate(estrutura_grupos[chave_grupo], 1):
+                            print(f"{i}. {ex['Exercício']}")
+                        num = input("Número do exercício para remover: ").strip()
+                        try:
+                            num = int(num) - 1
+                            removido = estrutura_grupos[chave_grupo].pop(num)
+                            print(f"{removido['Exercício']} removido com sucesso!")
+                        except:
+                            tocar_som_erro()
+                            print("Entrada inválida.")
+                    else:
+                        estrutura_grupos[chave_grupo].clear()
+                        print("Treino excluído com sucesso.")
                     input("Pressione Enter para continuar...")
-                    continue
-                rp_historico = carregar_rp_historico()
-                print(f"Exercícios atuais em {chave_grupo}:")
-                for i, ex in enumerate(estrutura_grupos[chave_grupo], 1):
-                    rp_atual = rp_historico.get(ex['Exercício'], 0.0)
-                    rp_info = f" (RP: {rp_atual:.1f} kg)" if rp_atual > 0 else ""
-                    print(f"  {i}. {ex['Exercício']} → {ex['S']} séries, {ex['R']} reps, {ex['P']} kg{rp_info}")
+                # Atualizar
+                elif acao == "2":
+                    limpar_tela()
+                    if not estrutura_grupos[chave_grupo]:
+                        print("Nenhum exercício para atualizar neste grupo.")
+                        input("Pressione Enter para continuar...")
+                        continue
+                    rp_historico = carregar_rp_historico()
+                    print(f"Exercícios atuais em {chave_grupo}:")
+                    for i, ex in enumerate(estrutura_grupos[chave_grupo], 1):
+                        rp_atual = rp_historico.get(ex['Exercício'], 0.0)
+                        rp_info = f" (RP: {rp_atual:.1f} kg)" if rp_atual > 0 else ""
+                        print(f"  {i}. {ex['Exercício']} → {ex['S']} séries, {ex['R']} reps, {ex['P']} kg{rp_info}")
 
-                num = input("Número do exercício para atualizar: ").strip()
-                try:
-                    num = int(num) - 1
-                    selecionado = estrutura_grupos[chave_grupo][num]
-                    ex_nome = selecionado.get('Exercício')
+                    num = input("Número do exercício para atualizar: ").strip()
+                    try:
+                        num = int(num) - 1
+                        selecionado = estrutura_grupos[chave_grupo][num]
+                        ex_nome = selecionado.get('Exercício')
 
-                    print(f"séries atuais {selecionado.get('S')}")
-                    S = int(input("Quantas séries? "))
-                    print(f"Repetições atuais {selecionado.get('R')}")
-                    R = int(input("Quantas repetições? "))
-                    print(f"Peso atual {selecionado.get('P')}")
-                    P = float(input("Qual peso (kg)? "))
+                        print(f"séries atuais {selecionado.get('S')}")
+                        S = int(input("Quantas séries? "))
+                        print(f"Repetições atuais {selecionado.get('R')}")
+                        R = int(input("Quantas repetições? "))
+                        print(f"Peso atual {selecionado.get('P')}")
+                        P = float(input("Qual peso (kg)? "))
 
-                    estrutura_grupos[chave_grupo][num] = {'Exercício': ex_nome, 'S': S, 'R': R, 'P': P}
-                    print("Exercício atualizado com sucesso!")
+                        estrutura_grupos[chave_grupo][num] = {'Exercício': ex_nome, 'S': S, 'R': R, 'P': P}
+                        print("Exercício atualizado com sucesso!")
 
-                    print(atualizar_rp_e_feedback(ex_nome, P))
+                        print(atualizar_rp_e_feedback(ex_nome, P))
 
-                except ValueError:
-                    tocar_som_erro()
-                    print("Entrada inválida. Use números inteiros para séries/repetições e números (com ponto ou vírgula) para peso.")
-                except:
-                    tocar_som_erro()
-                    print("Entrada inválida.")
-                input("Pressione Enter para continuar...")
+                    except ValueError:
+                        tocar_som_erro()
+                        print("Entrada inválida. Use números inteiros para séries/repetições e números (com ponto ou vírgula) para peso.")
+                    except:
+                        tocar_som_erro()
+                        print("Entrada inválida.")
+                    input("Pressione Enter para continuar...")
 
-            # Buscar
-            elif acao == "3":
-                limpar_tela()
-                busca = input("Digite o nome do exercício para buscar: ").strip().lower()
-                encontrado = False
-                rp_historico = carregar_rp_historico()
-                for g, lista in estrutura_grupos.items():
-                    for ex in lista:
-                        if busca in ex['Exercício'].lower():
-                            rp_atual = rp_historico.get(ex['Exercício'], 0.0)
-                            rp_info = f" (RP: {rp_atual:.1f} kg)" if rp_atual > 0 else ""
-                            print(f"Encontrado no grupo {g}: {ex['Exercício']} → {ex['S']} séries, {ex['R']} reps, {ex['P']} kg{rp_info}")
-                            encontrado = True
-                if not encontrado:
-                    print("Exercício não encontrado.")
-                input("Pressione Enter para continuar...")
+                # Buscar
+                elif acao == "3":
+                    limpar_tela()
+                    
+                    if chave_grupo in grupos_opcoes[grupo_escolha]:
+                        for i, item in enumerate(estrutura_grupos[chave_grupo], start=1):
+                            print(f"{i}. {item['Exercício']} — Séries: {item['S']}; Repetições: {item['R']}; Peso: {item['P']}")
+
+                    busca = input("Digite o nome do exercício para buscar: ").strip().lower()
+                    encontrado = False
+                    rp_historico = carregar_rp_historico()
+                    for g, lista in estrutura_grupos.items():
+                        for ex in lista:
+                            if busca in ex['Exercício'].lower():
+                                rp_atual = rp_historico.get(ex['Exercício'], 0.0)
+                                rp_info = f" (RP: {rp_atual:.1f} kg)" if rp_atual > 0 else ""
+                                print(f"Encontrado no grupo {g}: {ex['Exercício']} → {ex['S']} séries, {ex['R']} reps, {ex['P']} kg{rp_info}")
+                                encontrado = True
+                    if not encontrado:
+                        print("Exercício não encontrado.")
+                    input("Pressione Enter para continuar...")
+                
+                with open('exercicios.json', 'w', encoding='utf-8') as f:
+                        json.dump(estrutura_grupos, f, indent=4, ensure_ascii=False)
+                
 
 except Exception as e:
     print(f"\n❌ Ocorreu um erro inesperado: {e}")
-    tocar_som_erro()  # <<<--- Chama aqui
+    tocar_som_erro() 
     input("Pressione Enter para sair...")
     sys.exit(1)
