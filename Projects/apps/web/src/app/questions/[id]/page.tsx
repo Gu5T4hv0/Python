@@ -27,10 +27,24 @@ interface Answer {
   media_url?: string;
   mentor_id: string;
   created_at: string;
+  is_best_answer?: boolean;
+  rating?: number;
   mentor?: {
     display_name: string;
     email: string;
   };
+}
+
+interface SuggestedMentor {
+  id: string;
+  display_name: string;
+  email: string;
+  bio?: string;
+  avatar_url?: string;
+  mentor_tags: string[];
+  mentor_rate: number;
+  matchingTags: string[];
+  score: number;
 }
 
 export default function QuestionDetailPage() {
@@ -50,6 +64,10 @@ export default function QuestionDetailPage() {
   const [answerMediaFile, setAnswerMediaFile] = useState<File | null>(null);
   const [answerMediaDuration, setAnswerMediaDuration] = useState<number | null>(null);
   const [answerError, setAnswerError] = useState<string | null>(null);
+  const [suggestedMentors, setSuggestedMentors] = useState<SuggestedMentor[]>([]);
+  const [loadingMentors, setLoadingMentors] = useState(false);
+  const [isUserMentor, setIsUserMentor] = useState<boolean | null>(null);
+  const [followingMentors, setFollowingMentors] = useState<Set<string>>(new Set());
 
   const MAX_DURATION = 180; // 3min
 
@@ -102,10 +120,13 @@ export default function QuestionDetailPage() {
             body,
             media_url,
             mentor_id,
-            created_at
+            created_at,
+            is_best_answer,
+            rating
           `
           )
           .eq('question_id', questionId)
+          .order('is_best_answer', { ascending: false })
           .order('created_at', { ascending: false });
 
         if (aError) throw aError;
@@ -131,6 +152,63 @@ export default function QuestionDetailPage() {
         // Get current user
         const { data: { user: currentUser } } = await supabase.auth.getUser();
         setUser(currentUser);
+
+        // Verificar se o usuário é mentor
+        if (currentUser) {
+          const { data: userProfile } = await supabase
+            .from('profiles')
+            .select('is_mentor')
+            .eq('id', currentUser.id)
+            .single();
+          
+          setIsUserMentor(userProfile?.is_mentor || false);
+        } else {
+          setIsUserMentor(null);
+        }
+
+        // Buscar mentores sugeridos se houver tags
+        if (formattedQuestion.tags && formattedQuestion.tags.length > 0) {
+          setLoadingMentors(true);
+          try {
+            const mentorResponse = await fetch('/api/mentors/match', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ tags: formattedQuestion.tags, questionId }),
+            });
+            const mentorData = await mentorResponse.json();
+            if (mentorData.mentors) {
+              setSuggestedMentors(mentorData.mentors);
+
+              // Verificar quais mentores o usuário está seguindo
+              if (currentUser && mentorData.mentors.length > 0) {
+                const mentorIds = mentorData.mentors.map((m: any) => m.id);
+                const followChecks = await Promise.all(
+                  mentorIds.map(async (mentorId: string) => {
+                    try {
+                      const res = await fetch('/api/follows/status', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ follower_id: currentUser.id, mentor_id: mentorId }),
+                      });
+                      const data = await res.json();
+                      return { mentorId, following: data.following };
+                    } catch {
+                      return { mentorId, following: false };
+                    }
+                  })
+                );
+                const followingSet = new Set(
+                  followChecks.filter((c) => c.following).map((c) => c.mentorId)
+                );
+                setFollowingMentors(followingSet);
+              }
+            }
+          } catch (err) {
+            console.error('Erro ao buscar mentores:', err);
+          } finally {
+            setLoadingMentors(false);
+          }
+        }
       } catch (err: any) {
         setError(err?.message || 'Erro ao carregar pergunta');
       } finally {
@@ -146,6 +224,12 @@ export default function QuestionDetailPage() {
 
     if (!user) {
       router.push('/auth/login');
+      return;
+    }
+
+    // Verificar se é mentor
+    if (!isUserMentor) {
+      alert('Apenas mentores podem responder perguntas. Torne-se um mentor em /mentor/profile');
       return;
     }
 
@@ -191,18 +275,24 @@ export default function QuestionDetailPage() {
         media_duration_seconds = answerMediaDuration ? Math.floor(answerMediaDuration) : null;
       }
 
-      const { error } = await supabase.from('answers').insert([
-        {
+      // Usar API route para validar se é mentor
+      const response = await fetch('/api/answers/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
           question_id: questionId,
           mentor_id: user.id,
           body: answerContent,
           media_url,
           media_type,
           media_duration_seconds,
-        },
-      ]);
+        }),
+      });
 
-      if (error) throw error;
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || 'Erro ao criar resposta');
+      }
 
       // Atualizar lista de respostas
       setAnswers([
@@ -336,6 +426,94 @@ export default function QuestionDetailPage() {
           </div>
         </div>
 
+        {/* Mentores Sugeridos */}
+        {suggestedMentors.length > 0 && (
+          <div className="bg-white rounded-lg shadow-md p-6 mb-8 border border-gray-200">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">
+              👥 Mentores Sugeridos para esta Pergunta
+            </h2>
+            <p className="text-sm text-gray-600 mb-4">
+              Estes mentores têm experiência nas tags desta pergunta:
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {suggestedMentors.slice(0, 4).map((mentor) => {
+                const isFollowing = followingMentors.has(mentor.id);
+                return (
+                  <div
+                    key={mentor.id}
+                    className="border border-gray-200 rounded-lg p-4 hover:border-blue-300 hover:shadow-sm transition"
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <Link
+                          href={`/mentor/${mentor.id}`}
+                          className="block hover:underline"
+                        >
+                          <h3 className="font-semibold text-gray-900">{mentor.display_name}</h3>
+                        </Link>
+                        <p className="text-xs text-gray-500 mb-2">{mentor.email}</p>
+                        {mentor.bio && (
+                          <p className="text-sm text-gray-600 mb-2 line-clamp-2">{mentor.bio}</p>
+                        )}
+                        <div className="flex flex-wrap gap-1 mb-2">
+                          {mentor.matchingTags.map((tag) => (
+                            <span
+                              key={tag}
+                              className="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded"
+                            >
+                              #{tag}
+                            </span>
+                          ))}
+                        </div>
+                        <p className="text-xs text-gray-500 mb-2">
+                          Taxa: R$ {Number(mentor.mentor_rate).toFixed(2)} • Match: {mentor.score} tag{mentor.score !== 1 ? 's' : ''}
+                        </p>
+                        {user && user.id !== mentor.id && (
+                          <button
+                            onClick={async () => {
+                              try {
+                                const response = await fetch('/api/follows/toggle', {
+                                  method: 'POST',
+                                  headers: { 'Content-Type': 'application/json' },
+                                  body: JSON.stringify({
+                                    follower_id: user.id,
+                                    mentor_id: mentor.id,
+                                  }),
+                                });
+                                const data = await response.json();
+                                if (response.ok) {
+                                  setFollowingMentors((prev) => {
+                                    const newSet = new Set(prev);
+                                    if (data.following) {
+                                      newSet.add(mentor.id);
+                                    } else {
+                                      newSet.delete(mentor.id);
+                                    }
+                                    return newSet;
+                                  });
+                                }
+                              } catch (err) {
+                                console.error('Erro ao seguir:', err);
+                              }
+                            }}
+                            className={`text-xs px-3 py-1 rounded transition ${
+                              isFollowing
+                                ? 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                            }`}
+                          >
+                            {isFollowing ? '✓ Seguindo' : '+ Seguir'}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {/* Respostas */}
         <div className="mb-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">
@@ -350,11 +528,36 @@ export default function QuestionDetailPage() {
           ) : (
             <div className="space-y-4">
               {answers.map((answer) => (
-                <div key={answer.id} className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+                <div
+                  key={answer.id}
+                  className={`bg-white rounded-lg shadow-sm p-6 border ${
+                    answer.is_best_answer
+                      ? 'border-yellow-400 bg-yellow-50'
+                      : 'border-gray-200'
+                  }`}
+                >
                   <div className="flex justify-between items-start mb-3">
-                    <div>
-                      <p className="font-semibold text-gray-900">{answer.mentor?.display_name}</p>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <p className="font-semibold text-gray-900">{answer.mentor?.display_name}</p>
+                        {answer.is_best_answer && (
+                          <span className="text-xs bg-yellow-400 text-yellow-900 px-2 py-1 rounded font-semibold">
+                            ⭐ Melhor Resposta
+                          </span>
+                        )}
+                      </div>
                       <p className="text-sm text-gray-500">{answer.mentor?.email}</p>
+                      {answer.rating && (
+                        <div className="flex items-center gap-1 mt-1">
+                          <span className="text-xs text-gray-600">Avaliação:</span>
+                          {[...Array(5)].map((_, i) => (
+                            <span key={i} className={i < answer.rating! ? 'text-yellow-400' : 'text-gray-300'}>
+                              ⭐
+                            </span>
+                          ))}
+                          <span className="text-xs text-gray-500">({answer.rating}/5)</span>
+                        </div>
+                      )}
                     </div>
                     <p className="text-xs text-gray-500">
                       {new Date(answer.created_at).toLocaleDateString('pt-BR', {
@@ -370,11 +573,117 @@ export default function QuestionDetailPage() {
                   <p className="text-gray-700 mb-3">{answer.body}</p>
 
                   {answer.media_url && (
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-gray-600 mb-3">
                       📎 <a href={answer.media_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
                         Ver resposta em áudio/vídeo
                       </a>
                     </p>
+                  )}
+
+                  {/* Ações do autor da pergunta */}
+                  {user && user.id === question.user_id && (
+                    <div className="pt-3 border-t border-gray-200 space-y-2">
+                      {question.status === 'open' && (
+                        <>
+                          <button
+                            onClick={async () => {
+                              if (!confirm(`Aceitar esta resposta? O mentor receberá R$ ${(question.price * 0.8).toFixed(2)} (80% do valor).`)) {
+                                return;
+                              }
+                              try {
+                                const response = await fetch('/api/transactions/create', {
+                                  method: 'POST',
+                                  headers: { 'Content-Type': 'application/json' },
+                                  body: JSON.stringify({
+                                    question_id: question.id,
+                                    answer_id: answer.id,
+                                    mentor_id: answer.mentor_id,
+                                  }),
+                                });
+                                const data = await response.json();
+                                if (response.ok) {
+                                  alert('Resposta aceita! Transação criada com sucesso.');
+                                  window.location.reload();
+                                } else {
+                                  alert('Erro ao aceitar resposta: ' + (data.error || 'Erro desconhecido'));
+                                }
+                              } catch (err: any) {
+                                alert('Erro ao aceitar resposta: ' + err.message);
+                              }
+                            }}
+                            className="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-green-700 transition text-sm mr-2"
+                          >
+                            ✓ Aceitar Resposta (Pagar R$ {question.price.toFixed(2)})
+                          </button>
+                          <button
+                            onClick={async () => {
+                              try {
+                                const response = await fetch('/api/answers/mark-best', {
+                                  method: 'POST',
+                                  headers: { 'Content-Type': 'application/json' },
+                                  body: JSON.stringify({
+                                    answer_id: answer.id,
+                                    question_id: question.id,
+                                    user_id: user.id,
+                                  }),
+                                });
+                                if (response.ok) {
+                                  window.location.reload();
+                                } else {
+                                  const data = await response.json();
+                                  alert('Erro: ' + (data.error || 'Erro desconhecido'));
+                                }
+                              } catch (err: any) {
+                                alert('Erro: ' + err.message);
+                              }
+                            }}
+                            className={`px-4 py-2 rounded-lg font-semibold transition text-sm ${
+                              answer.is_best_answer
+                                ? 'bg-yellow-200 text-yellow-900 hover:bg-yellow-300'
+                                : 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200'
+                            }`}
+                          >
+                            {answer.is_best_answer ? '⭐ Melhor Resposta' : '⭐ Marcar como Melhor'}
+                          </button>
+                        </>
+                      )}
+                      {question.status === 'answered' && !answer.rating && (
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm text-gray-600">Avaliar resposta:</span>
+                          {[1, 2, 3, 4, 5].map((rating) => (
+                            <button
+                              key={rating}
+                              onClick={async () => {
+                                try {
+                                  const response = await fetch('/api/answers/rate', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({
+                                      answer_id: answer.id,
+                                      rating,
+                                      user_id: user.id,
+                                    }),
+                                  });
+                                  if (response.ok) {
+                                    window.location.reload();
+                                  }
+                                } catch (err) {
+                                  console.error('Erro ao avaliar:', err);
+                                }
+                              }}
+                              className="text-2xl hover:scale-110 transition"
+                            >
+                              ⭐
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                      {question.status === 'open' && (
+                        <p className="text-xs text-gray-500 mt-2">
+                          Mentor receberá R$ {(question.price * 0.8).toFixed(2)} • Plataforma: R$ {(question.price * 0.2).toFixed(2)}
+                        </p>
+                      )}
+                    </div>
                   )}
                 </div>
               ))}
@@ -385,7 +694,7 @@ export default function QuestionDetailPage() {
         {/* Formulário de resposta */}
         <div className="bg-white rounded-lg shadow-md p-8 border border-gray-200">
           <h3 className="text-xl font-bold text-gray-900 mb-4">
-            {user ? '📝 Sua Resposta' : '🔐 Faça Login para Responder'}
+            {user ? (isUserMentor ? '📝 Sua Resposta' : '👤 Torne-se um Mentor') : '🔐 Faça Login para Responder'}
           </h3>
 
           {!user ? (
@@ -396,6 +705,21 @@ export default function QuestionDetailPage() {
                 className="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 transition"
               >
                 Faça Login
+              </Link>
+            </div>
+          ) : !isUserMentor ? (
+            <div className="text-center bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+              <p className="text-yellow-800 mb-4 font-semibold">
+                ⚠️ Apenas mentores podem responder perguntas
+              </p>
+              <p className="text-yellow-700 mb-4 text-sm">
+                Torne-se um mentor para começar a responder perguntas e ganhar dinheiro!
+              </p>
+              <Link
+                href="/mentor/profile"
+                className="inline-block bg-yellow-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-yellow-700 transition"
+              >
+                Tornar-se Mentor
               </Link>
             </div>
           ) : showAnswerForm ? (

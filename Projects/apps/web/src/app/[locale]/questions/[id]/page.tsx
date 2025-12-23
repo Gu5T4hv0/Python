@@ -55,6 +55,7 @@ export default function LocalizedQuestionDetailPage() {
   const [answerMediaFile, setAnswerMediaFile] = useState<File | null>(null);
   const [answerMediaDuration, setAnswerMediaDuration] = useState<number | null>(null);
   const [answerError, setAnswerError] = useState<string | null>(null);
+  const [isUserMentor, setIsUserMentor] = useState<boolean | null>(null);
 
   const MAX_DURATION = 180; // 3min
 
@@ -120,6 +121,19 @@ export default function LocalizedQuestionDetailPage() {
           data: { user: currentUser },
         } = await supabase.auth.getUser();
         setUser(currentUser);
+
+        // Verificar se o usuário é mentor
+        if (currentUser) {
+          const { data: userProfile } = await supabase
+            .from('profiles')
+            .select('is_mentor')
+            .eq('id', currentUser.id)
+            .single();
+          
+          setIsUserMentor(userProfile?.is_mentor || false);
+        } else {
+          setIsUserMentor(null);
+        }
       } catch (err: any) {
         setError(err?.message || t('question.error_load'));
       } finally {
@@ -135,6 +149,12 @@ export default function LocalizedQuestionDetailPage() {
 
     if (!user) {
       router.push(`/${locale}/auth/login?redirect=/${locale}/questions/${questionId}`);
+      return;
+    }
+
+    // Verificar se é mentor
+    if (!isUserMentor) {
+      alert(t('question.only_mentors_can_answer') || 'Apenas mentores podem responder perguntas. Torne-se um mentor em /mentor/profile');
       return;
     }
 
@@ -184,18 +204,24 @@ export default function LocalizedQuestionDetailPage() {
           : null;
       }
 
-      const { error } = await supabase.from('answers').insert([
-        {
+      // Usar API route para validar se é mentor
+      const response = await fetch('/api/answers/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
           question_id: questionId,
           mentor_id: user.id,
           body: answerContent,
           media_url,
           media_type,
           media_duration_seconds,
-        },
-      ]);
+        }),
+      });
 
-      if (error) throw error;
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || t('question.answer_submit_error'));
+      }
 
       // Refetch answers (simplificado, sem otimização local para manter código claro)
       const { data: answersRefetch } = await supabase
@@ -402,7 +428,7 @@ export default function LocalizedQuestionDetailPage() {
         {/* Formulário de resposta */}
         <div className="bg-white rounded-lg shadow-md p-8 border border-gray-200">
           <h3 className="text-xl font-bold text-gray-900 mb-4">
-            {user ? t('question.answer_title') : t('question.login_to_answer')}
+            {user ? (isUserMentor ? t('question.answer_title') : t('question.become_mentor_title')) : t('question.login_to_answer')}
           </h3>
 
           {!user ? (
@@ -415,6 +441,21 @@ export default function LocalizedQuestionDetailPage() {
                 className="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 transition"
               >
                 {t('question.login_button')}
+              </Link>
+            </div>
+          ) : !isUserMentor ? (
+            <div className="text-center bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+              <p className="text-yellow-800 mb-4 font-semibold text-lg">
+                {t('question.only_mentors_can_answer')}
+              </p>
+              <p className="text-yellow-700 mb-4 text-sm">
+                {t('question.become_mentor_message')}
+              </p>
+              <Link
+                href="/mentor/profile"
+                className="inline-block bg-yellow-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-yellow-700 transition shadow-sm"
+              >
+                {t('question.become_mentor_button')}
               </Link>
             </div>
           ) : showAnswerForm ? (

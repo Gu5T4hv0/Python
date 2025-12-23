@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import NotificationsBell from './NotificationsBell';
 
 export default function Header() {
   const router = useRouter();
@@ -45,8 +46,15 @@ export default function Header() {
         <div className="flex gap-4 items-center">
           {user ? (
             <>
+              <NotificationsBell />
+              <Link
+                href="/mentor/profile"
+                className="px-4 py-2 text-sm font-semibold text-blue-600 hover:bg-blue-50 rounded-lg transition"
+              >
+                👤 Perfil
+              </Link>
               <span className="text-gray-700 text-sm">
-                👤 {user.email}
+                {user.email}
               </span>
               <button
                 onClick={handleLogout}

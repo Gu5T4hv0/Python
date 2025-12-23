@@ -94,6 +94,10 @@
   "question.cancel": "Cancel",
   "question.cta_answer": "💬 Answer this Question",
   "question.view_answer_media": "View answer in audio/video",
+  "question.only_mentors_can_answer": "⚠️ Only mentors can answer questions",
+  "question.become_mentor_title": "👤 Become a Mentor",
+  "question.become_mentor_message": "Become a mentor to start answering questions and earning money! Complete your profile with your areas of expertise.",
+  "question.become_mentor_button": "Become a Mentor",
 
   "success.title": "Payment completed ✅",
   "success.description": "Your question was submitted and will be listed soon.",
